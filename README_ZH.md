@@ -289,55 +289,6 @@ harness 会把 `DSH_HOME` 指到自己的临时目录（`$env:TEMP\dsh-live2d-ha
 
 改 `assets/live2d-widget.js` 后直接刷新页面即可；改 `lib/index.js` 需要重载插件。
 
-### 发布到 GitHub / npm
-
-仓库已经按发布要求准备好了，剩下几步属于账号侧操作。
-
-**1. 替换占位符。** 全仓库搜 `YOUR_GITHUB_NAME` 替换成你的 GitHub 用户名，共 6 处：
-`package.json` 的 `author.url` / `repository.url` / `bugs.url` / `homepage`，
-以及 README.md 与 README_ZH.md 快速开始里的安装命令。顺手把 `package.json` 的 `author.name`
-改成你的署名。仓库名如果不是 `dsh-live2d-widget`，四处 URL 也要一起改。
-
-**2. 建仓库并加上 `dsh-plugin` 话题。** 官方 README 明确写了：给插件仓库加上
-[`dsh-plugin`](https://github.com/topics/dsh-plugin) topic 才会被发现。
-在仓库首页 → About 齿轮 → Topics 里填 `dsh-plugin`（建议再加 `live2d`、`deepseek-harness`、`web-ui`）。
-
-**3. 发到 npm（可选；发了之后别人就能 `dsh plugin add dsh-live2d-widget`）。**
-
-```sh
-npm run verify     # 发布前自检；prepublishOnly 也会自动跑一遍
-npm publish
-git tag v1.2.0 && git push --tags
-```
-
-`dsh-live2d-widget` 这个名字在 npm 上目前是空的（已确认）。
-
-**4. 想用动态徽章再替换。** 现在用的是静态徽章，因为仓库地址还没定；有了仓库之后可以换成：
-
-```html
-<a href="https://github.com/xieluyang912/dsh-live2d-widget/stargazers"><img alt="stars" src="https://img.shields.io/github/stars/xieluyang912/dsh-live2d-widget?style=flat-square&color=4b6fff"></a>
-<a href="https://www.npmjs.com/package/dsh-live2d-widget"><img alt="npm" src="https://img.shields.io/npm/v/dsh-live2d-widget?style=flat-square&color=4b6fff"></a>
-```
-
-**发布前值得知道的四件事（都已实测）：**
-
-- **`files` 决定 git / npm 安装时打包什么。** 已核对：打出来 126 个文件、4.0 MB，
-  `lib`、`assets`（含模型与运行时）、`cordis.patch.yml`、两份 README、`docs` 素材都在，
-  `tools/` 正确排除。**改动目录结构后记得同步 `files`**，否则别人装完会缺文件。
-- **不要加 `exports` 字段。** DSH 需要按路径读 `cordis.patch.yml`；没有 `exports` 时所有文件都能解析，
-  一旦加上 `exports` 就必须同时声明 `"./cordis.patch.yml"` 与 `"./package.json"`，否则加载失败。
-  本插件不是给别人 import 的库，所以不加是最稳的。
-- **`engines` 要对齐 DSH 自己的范围**（`^22.19 || >=24`）。写宽了（比如 `>=20`）会让人在
-  老版本 Node 上装出一个跑不起来的插件。
-- **没有构建步骤也没有生命周期脚本**，所以从 git 安装不会被 pnpm 的
-  `ERR_PNPM_IGNORED_BUILDS` 拦住 —— 这是刻意保持的，加 `prepare` 脚本会破坏它。
-
-> **素材版权提示：** 内置 4 个角色里，纱雾 / 雷姆 / 伊斯特是从商业游戏中提取的第三方素材，
-> 没有可用于再分发的授权；缇娅是 Live2D 官方示例模型，其再分发条款我无法确证。
-> 公开发布这些素材存在被 DMCA 或 npm 下架的风险，**由发布者自行承担**。
-> `LICENSE` 第三部分已写明来源与权利归属。想降低风险：删掉 `assets/models/<角色>/`
-> 并在 `lib/index.js` 的 `BUILTIN_META` 里移除对应条目即可，插件在没有内置模型时也能正常运行
-> （会提示「没有可用的模型」，导入功能不受影响）。
 
 ## 目录结构
 
