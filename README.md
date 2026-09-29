@@ -54,12 +54,6 @@ Pick any one of three install paths:
 # 1) From GitHub (recommended: all 4 bundled characters come with it)
 dsh plugin --profile web add github:xieluyang912/dsh-live2d-widget
 
-#    the equivalent explicit git URL
-dsh plugin --profile web add git+https://github.com/xieluyang912/dsh-live2d-widget.git
-
-# 2) From npm
-dsh plugin --profile web add dsh-live2d-widget
-
 # 3) From a local directory (development: pnpm makes a junction, so edits apply immediately)
 dsh plugin --profile web add link:D:/Plugins/dsh-live2d-widget
 
