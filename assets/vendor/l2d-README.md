@@ -1,0 +1,108 @@
+<p align="center">
+  <img width="240"  src="https://hacxy-1259720482.cos.ap-hongkong.myqcloud.com/images/logo.svg"/>
+</p>
+<h1 align="center">L2D</h1>
+<h4 align="center">在浏览器中加载 Live2D 模型更简单</h4>
+
+简体中文 · [English](./README.en.md)
+
+[![npm](https://img.shields.io/npm/v/l2d?color=FFB6C1&labelColor=1b1b1f&label=npm)](https://www.npmjs.com/package/l2d)
+[![downloads](https://img.shields.io/npm/dm/l2d?color=FFB6C1&labelColor=1b1b1f&label=downloads)](https://www.npmjs.com/package/l2d)
+
+## 什么是 l2d
+
+`l2d` 是一个用于在浏览器驱动 Live2D 模型的javascript库，完全基于 Live2D 官方 Cubism SDK 进行二次封装。`l2d` 同时也是 `Live2D` 的简写，寓意着用更简单、更快捷、更低成本的方式在 Web 页面中加载 Live2D 模型。
+
+- **开箱即用** — 无需手动引入官方 SDK，三步完成Live2D模型加载
+- **全版本兼容** — 内置 Cubism 2 & 6 运行时，同时支持 `.model.json`（Cubism 2）和 `.model3.json`（Cubism 6），覆盖所有Live2D模型版本，并暴露规范统一的接口
+- **统一规范的API** Cubism 2 & 6 所驱动的模型均使用完全相同规范的接口，尽可能保证两版本的能力与规范完全对称
+- **零依赖，轻量** — 单一 JS 文件，不绑定任何框架，Vue、React、原生项目均可直接使用
+
+[查阅文档](https://l2d.hacxy.cn)
+
+L2D Demos: <https://l2d-demo.hacxy.cn>
+
+在线预览调试工具: <https://l2d-viewer.hacxy.cn>
+
+通过 [stackblitz](https://stackblitz.com/edit/vitejs-vite-dye9t3?file=src%2Fmain.ts) 在线游玩`l2d`.
+
+## 参与贡献
+
+欢迎任何形式的贡献，包括提交 Bug 报告、功能建议或直接提交代码。
+
+### 环境准备
+
+项目使用 [pnpm](https://pnpm.io) 管理依赖，Node.js 版本要求 **v24.14.0**。
+
+```bash
+# 克隆仓库
+git clone https://github.com/hacxy/l2d.git
+cd l2d
+
+# 安装依赖
+pnpm install
+```
+
+### 开发流程
+
+1. **创建 Issue**：建议先在 [Issues](https://github.com/hacxy/l2d/issues) 中描述你要解决的问题或新增的功能，获得反馈后再开始编码。
+
+2. **创建分支**：以 `<issue-id>-<github-username>` 格式从 `main` 分支新建特性分支，例如 `42-hacxy`。
+
+3. **启动开发环境**：
+
+   ```bash
+   pnpm run demo:dev   # 启动 demo 调试页面
+   ```
+
+4. **运行测试**：
+
+   ```bash
+   pnpm run test
+   ```
+
+5. **代码规范**：项目使用 ESLint，pre-commit 钩子会自动对暂存文件执行 lint 修复，也可手动运行：
+
+   ```bash
+   pnpm run lint:fix
+   ```
+
+6. **提交代码**：使用项目内置的交互式提交工具，它会引导你填写符合 [Conventional Commits](https://www.conventionalcommits.org) 规范的提交信息：
+
+   ```bash
+   pnpm run commit
+   ```
+
+7. **提交 Pull Request**：向 `main` 分支发起 PR，说明改动内容和动机，关联对应 Issue。
+
+## 贡献者们
+
+感谢以下所有为 `l2d` 贡献过代码的 [开发者们](https://github.com/hacxy/l2d/graphs/contributors)。
+
+<a href="https://github.com/hacxy/l2d/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=hacxy/l2d" />
+</a>
+
+## 讨论
+
+微信群:
+
+<img width="200"  src="https://raw.githubusercontent.com/hacxy/hacxy/main/images/wxq.jpg"/>
+
+## 免责声明
+
+Live2D 模型及其相关资源（贴图、动作、表情文件等）的著作权归原始权利人所有。`l2d` 仅提供技术加载能力，**不包含、不分发任何模型资源**。
+
+在使用 `l2d` 加载任何 Live2D 模型时，请确保：
+
+1. 你拥有该模型的使用权或已获得权利人的明确授权
+2. 你的使用行为符合模型附带的许可协议（如禁止商用、禁止二次分发等）
+3. 不得将本库用于侵权、违法或违反 Live2D Inc. 服务条款的用途
+
+对于因不当使用模型资源而产生的任何版权纠纷或法律责任，`l2d` 及其贡献者不承担任何责任。
+
+`l2d` 在运行时集成了 Live2D Cubism SDK。Cubism SDK 的使用须遵守 [Live2D Proprietary Software License](https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html)。若你的项目用于商业用途，请自行确认是否需要向 Live2D Inc. 申请商业许可。
+
+## License
+
+[MIT](./LICENSE) License &copy; 2023-PRESENT [Hacxy](https://github.com/hacxy)

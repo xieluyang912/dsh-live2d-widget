@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 220" width="900" height="220" role="img" aria-label="dsh-live2d-widget — Live2D desktop pet plugin for DeepSeek Harness">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#141a26"/>
+      <stop offset="55%" stop-color="#1b2333"/>
+      <stop offset="100%" stop-color="#23304a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5e96ff"/>
+      <stop offset="100%" stop-color="#8fd0ff"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#5e96ff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#5e96ff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="900" height="220" rx="18" fill="url(#bg)"/>
+  <rect x="0.75" y="0.75" width="898.5" height="218.5" rx="17.25" fill="none" stroke="#ffffff" stroke-opacity="0.10"/>
+  <circle cx="150" cy="110" r="120" fill="url(#glow)"/>
+
+  <!-- A tiny vector stand-in for the pet: ears, head, eyes, blush, smile. -->
+  <g transform="translate(150 116)">
+    <path d="M-52 -30 L-70 -74 L-22 -50 Z" fill="#f6c46a"/>
+    <path d="M52 -30 L70 -74 L22 -50 Z" fill="#f6c46a"/>
+    <path d="M-48 -34 L-60 -62 L-28 -48 Z" fill="#ffe6b8"/>
+    <path d="M48 -34 L60 -62 L28 -48 Z" fill="#ffe6b8"/>
+    <ellipse cx="0" cy="0" rx="60" ry="54" fill="#ffd98a"/>
+    <ellipse cx="0" cy="14" rx="46" ry="36" fill="#fff2d6"/>
+    <ellipse cx="-22" cy="-4" rx="8" ry="10" fill="#2b3448"/>
+    <ellipse cx="22" cy="-4" rx="8" ry="10" fill="#2b3448"/>
+    <circle cx="-19" cy="-8" r="3" fill="#ffffff"/>
+    <circle cx="25" cy="-8" r="3" fill="#ffffff"/>
+    <ellipse cx="-36" cy="16" rx="10" ry="6" fill="#ff9d9d" opacity="0.75"/>
+    <ellipse cx="36" cy="16" rx="10" ry="6" fill="#ff9d9d" opacity="0.75"/>
+    <path d="M-9 20 Q0 29 9 20" fill="none" stroke="#2b3448" stroke-width="3.5" stroke-linecap="round"/>
+    <ellipse cx="0" cy="-30" rx="13" ry="9" fill="#ff9d9d" opacity="0.6"/>
+  </g>
+
+  <text x="262" y="88" font-family="Segoe UI, Helvetica Neue, Arial, PingFang SC, Microsoft YaHei, sans-serif"
+        font-size="42" font-weight="700" fill="#f2f6ff" letter-spacing="0.5">dsh-live2d-widget</text>
+  <text x="262" y="122" font-family="Segoe UI, Helvetica Neue, Arial, PingFang SC, Microsoft YaHei, sans-serif"
+        font-size="17" fill="#9fb2cd">Live2D desktop pet for the DeepSeek Harness Web UI</text>
+
+  <g font-family="Segoe UI, Helvetica Neue, Arial, PingFang SC, Microsoft YaHei, sans-serif" font-size="13" font-weight="600">
+    <rect x="262" y="142" width="112" height="26" rx="13" fill="url(#accent)" opacity="0.20"/>
+    <text x="318" y="159" fill="#a9caff" text-anchor="middle">Cubism 2 · 4</text>
+    <rect x="384" y="142" width="104" height="26" rx="13" fill="url(#accent)" opacity="0.20"/>
+    <text x="436" y="159" fill="#a9caff" text-anchor="middle">4 characters</text>
+    <rect x="498" y="142" width="146" height="26" rx="13" fill="url(#accent)" opacity="0.20"/>
+    <text x="571" y="159" fill="#a9caff" text-anchor="middle">0 runtime deps</text>
+  </g>
+</svg>

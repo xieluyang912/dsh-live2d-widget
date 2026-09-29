@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Harness scratch home used by tools/harness.mjs
+.dsh-live2d-harness-home/
+
+# Logs and OS cruft
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Local scratch
+*.tmp
+*.bak

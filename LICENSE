@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 Xieluyang
+Copyright (c) 2026 dsh-live2d-widget contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +19,42 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+================================================================================
+THIRD-PARTY NOTICES
+================================================================================
+
+1. Live2D Cubism SDK / runtime
+   The bundled runtime at assets/vendor/l2d.min.js embeds the Live2D Cubism SDK
+   (Cubism 2 and Cubism 6 runtimes). Use of the Cubism SDK is governed by the
+   Live2D Proprietary Software License Agreement:
+   https://www.live2d.com/eula/live2d-proprietary-software-license-agreement_en.html
+   Commercial use may require a separate license from Live2D Inc.
+
+2. l2d (https://github.com/hacxy/l2d) — MIT License, Copyright (c) 2023-PRESENT Hacxy
+   Vendored as assets/vendor/l2d.min.js. Its LICENSE and README are kept alongside
+   it as assets/vendor/l2d-LICENSE.txt and assets/vendor/l2d-README.md.
+
+3. Live2D models under assets/models/
+   Model assets (textures, .moc / .moc3, motions, physics) are the property of
+   their original rights holders and were obtained from the public collection at
+   https://github.com/Eikanya/Live2d-model. They are NOT covered by the MIT
+   license above. Check each model's own terms before redistributing or using
+   them commercially. The MIT license applies only to this plugin's own code.
+
+   Per-character provenance, so any single character can be removed on request
+   by deleting its directory and the matching entry in lib/index.js
+   (BUILTIN_META):
+
+     assets/models/sagiri/     Sagiri, from "Eromanga Sensei"
+                               source: Live2D/纱雾live2d.zip
+     assets/models/rem/        Rem, from "Re:ZERO -Starting Life in Another World-"
+                               source: Live2D/Live2dRem-master.zip
+     assets/models/histoire/   Histoire, from "Hyperdimension Neptunia"
+                               source: Live2D/Live2dHistoire-master.zip
+     assets/models/tia/        Tia, a Live2D official sample model
+                               source: Live2D/Live2D-master.zip
+
+   None of these four ships with a licence granting redistribution. No takedown
+   or removal request from a rights holder has been received; should one arrive,
+   removing the named directory removes the asset from this package entirely.

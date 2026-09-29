@@ -1,0 +1,55 @@
+{
+  "name": "dsh-live2d-widget",
+  "version": "1.2.0",
+  "description": "DSH Web 界面的 Live2D 桌宠挂件：内置 4 个可爱日系角色可自由切换，点击模型弹出符合人设的聊天气泡（台词可自定义），可拖动摆位、调整大小与透明度，支持 zip / 文件夹 / 本机路径导入自己的模型",
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "deepseek",
+    "live2d",
+    "cubism",
+    "widget",
+    "desktop-pet",
+    "web-ui"
+  ],
+  "type": "module",
+  "main": "lib/index.js",
+  "files": [
+    "lib",
+    "assets",
+    "docs",
+    "cordis.patch.yml",
+    "README.md",
+    "README_ZH.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "node": "^22.19 || >=24"
+  },
+  "scripts": {
+    "verify": "node tools/verify.mjs",
+    "prepublishOnly": "npm run verify"
+  },
+  "author": {
+    "name": "Xieluyang",
+    "url": "https://github.com/xieluyang912"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xieluyang912/dsh-live2d-widget.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xieluyang912/dsh-live2d-widget/issues"
+  },
+  "homepage": "https://github.com/xieluyang912/dsh-live2d-widget#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}

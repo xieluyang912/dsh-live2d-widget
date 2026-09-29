@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>l2d calibration</title>
+<style>
+  body { margin: 0; font: 12px/1.5 Consolas, monospace; background: #101418; color: #dfe8f5 }
+  #stage { display: flex; flex-wrap: wrap; gap: 10px; padding: 8px }
+  .cell { background: #1b2230; padding: 4px; text-align: center }
+  canvas { display: block; background: conic-gradient(#2a3446 0 25%, #222b3b 0 50%, #2a3446 0 75%, #222b3b 0); margin: 0 auto }
+  .lbl { color: #9fb6d4; padding-top: 3px }
+  pre { padding: 8px; white-space: pre-wrap; color: #9fe0b0 }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<pre id="out">loading model list…</pre>
+<script src="/dsh-live2d/runtime.js"></script>
+<script>
+// Derives the per-model `scale` / `position` defaults that make each bundled
+// model fill the widget canvas, centred, with a small margin.
+//
+// The canvas matches the widget's reference canvas (340 x 401) so the measured
+// numbers are directly usable. Reading the drawn pixels needs
+// `preserveDrawingBuffer`, and the first getContext call wins, so the context
+// is created here BEFORE the runtime initialises the canvas.
+//
+// The model list comes from the plugin itself, so this stays correct as the
+// bundled set changes.
+var W = 340
+var H = 401
+// Models keep playing their idle motion while being measured, so the silhouette
+// wobbles by a few percent frame to frame. Target 88% rather than hugging the
+// edge: the margin is what keeps the fitted result from clipping on a frame the
+// measurement happened not to catch.
+var FILL = 0.88
+
+function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms) }) }
+function clamp(v, lo, hi) { return v < lo ? lo : v > hi ? hi : v }
+
+function bounds(gl) {
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null)
+  var buf = new Uint8Array(W * H * 4)
+  gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, buf)
+  var x0 = 1e9, x1 = -1, yTop = 1e9, yBot = -1, ink = 0
+  for (var y = 0; y < H; y++) {
+    for (var x = 0; x < W; x++) {
+      if (buf[(y * W + x) * 4 + 3] > 8) {
+        ink++
+        if (x < x0) x0 = x
+        if (x > x1) x1 = x
+        if (y < yTop) yTop = y
+        if (y > yBot) yBot = y
+      }
+    }
+  }
+  if (x1 < 0) return null
+  return { x0: x0, x1: x1, top: H - 1 - yBot, bottom: H - 1 - yTop, w: x1 - x0 + 1, h: yBot - yTop + 1, ink: ink }
+}
+
+function makeRenderer(url, label) {
+  var cell = document.createElement('div')
+  cell.className = 'cell'
+  var canvas = document.createElement('canvas')
+  canvas.width = W
+  canvas.height = H
+  canvas.style.cssText = 'width:' + W + 'px;height:' + H + 'px'
+  cell.appendChild(canvas)
+  var cap = document.createElement('div')
+  cap.className = 'lbl'
+  cap.textContent = label
+  cell.appendChild(cap)
+  document.getElementById('stage').appendChild(cell)
+
+  // First getContext call fixes the attributes for the context the runtime reuses.
+  var gl = canvas.getContext('webgl2', { preserveDrawingBuffer: true, alpha: true, premultipliedAlpha: true })
+  if (!gl) gl = canvas.getContext('webgl', { preserveDrawingBuffer: true, alpha: true, premultipliedAlpha: true })
+  var inst = window.L2D.init(canvas)
+
+  async function shoot(scale, pos) {
+    await new Promise(function (res) {
+      inst.load({ path: url, scale: scale, position: pos, volume: 0, logLevel: 'error' })
+      inst.on('loaded', res)
+    })
+    await sleep(450)
+    return bounds(gl)
+  }
+  return { shoot: shoot, canvas: canvas, cell: cell, cap: cap }
+}
+
+/**
+ * Measure a model at one scale/position, plus the pixels it moves per unit of
+ * `position` (measured, not assumed: the runtime's vertical unit differs from
+ * its horizontal one and both follow the canvas size).
+ */
+async function measure(r, scale, pos, needUnits) {
+  var b = await r.shoot(scale, pos)
+  if (!b) return null
+  var ux = 200 * scale
+  var uy = -120 * scale
+  if (needUnits) {
+    var probeX = clamp(pos[0] + 0.2, -2, 2)
+    var probeY = clamp(pos[1] + 0.2, -2, 2)
+    var p = await r.shoot(scale, [probeX, probeY])
+    if (p && p.x0 !== b.x0 && probeX !== pos[0]) ux = (p.x0 - b.x0) / (probeX - pos[0])
+    if (p && p.top !== b.top && probeY !== pos[1]) uy = (p.top - b.top) / (probeY - pos[1])
+  }
+  return { b: b, ux: ux || 200 * scale, uy: uy || -120 * scale }
+}
+
+function touchEdges(b) {
+  return {
+    // The silhouette runs past the canvas, so its measured size is a lower
+    // bound and no scale derived from it can be trusted.
+    atLimit: b.w >= W - 2 || b.h >= H - 2,
+    touching: b.top <= 0 || b.bottom >= H - 1 || b.x0 <= 0 || b.x1 >= W - 1,
+  }
+}
+
+function recenterDelta(b, ux, uy, cap) {
+  return [
+    clamp((W / 2 - (b.x0 + b.w / 2)) / (ux || 1), -cap, cap),
+    clamp((H / 2 - (b.top + b.h / 2)) / (uy || -1), -cap, cap),
+  ]
+}
+
+async function fit(r) {
+  var scale = 1
+  var pos = [0, 0]
+
+  // Phase A: get the whole silhouette inside the canvas. Shrink only when the
+  // model genuinely overflows it — a box that merely touches an edge is just
+  // off-centre, and shrinking there would ratchet the model smaller forever.
+  for (var a = 0; a < 14; a++) {
+    var m = await measure(r, scale, pos, true)
+    if (!m) return { ok: false, reason: 'readback empty in phase A at scale=' + scale }
+    var edge = touchEdges(m.b)
+    if (edge.atLimit) scale = clamp(scale * 0.85, 0.05, 25)
+    var d = recenterDelta(m.b, m.ux, m.uy, 0.5)
+    pos = [clamp(pos[0] + d[0], -2, 2), clamp(pos[1] + d[1], -2, 2)]
+    if (!edge.atLimit && !edge.touching && Math.abs(d[0]) < 0.01 && Math.abs(d[1]) < 0.01) break
+  }
+
+  // Phase B: scale to the fill target and keep it centred.
+  for (var b2 = 0; b2 < 12; b2++) {
+    var m2 = await measure(r, scale, pos, true)
+    if (!m2) return { ok: false, reason: 'readback empty in phase B at scale=' + scale }
+    var edge2 = touchEdges(m2.b)
+    var k = edge2.atLimit ? 0.9 : Math.min((W * FILL) / m2.b.w, (H * FILL) / m2.b.h)
+    var nextScale = clamp(scale * k, 0.05, 25)
+    var d2 = recenterDelta(m2.b, m2.ux, m2.uy, 0.4)
+    var done = Math.abs(nextScale / scale - 1) < 0.015 && Math.abs(d2[0]) < 0.015 && Math.abs(d2[1]) < 0.015
+    scale = nextScale
+    pos = [clamp(pos[0] + d2[0], -2, 2), clamp(pos[1] + d2[1], -2, 2)]
+    if (done) break
+  }
+
+  // Safety: an animated silhouette can still land on a clipped frame, so back
+  // off until a measurement comes back fully inside the canvas.
+  for (var s = 0; s < 8; s++) {
+    var fs = await r.shoot(scale, pos)
+    if (!fs || !touchEdges(fs).atLimit) break
+    scale = clamp(scale * 0.9, 0.05, 25)
+  }
+
+  var final = await r.shoot(scale, pos)
+  var stillClipped = final ? touchEdges(final).touching : null
+  return {
+    ok: true,
+    scale: Number(scale.toFixed(3)),
+    position: [Number(pos[0].toFixed(3)), Number(pos[1].toFixed(3))],
+    clipped: stillClipped,
+    bounds: final,
+  }
+}
+
+async function run() {
+  var state = await (await fetch('/dsh-live2d/api/state')).json()
+  var models = state.models || []
+  document.getElementById('out').textContent = 'calibrating ' + models.length + ' models…'
+  var results = {}
+  var detail = []
+  for (var i = 0; i < models.length; i++) {
+    var m = models[i]
+    var r = makeRenderer(m.url, m.id)
+    var res
+    try {
+      res = await fit(r)
+    } catch (e) {
+      res = { ok: false, reason: String((e && e.message) || e) }
+    }
+    if (res.ok) {
+      results[m.id] = { scale: res.scale, position: res.position }
+      r.cap.textContent = m.id + '  scale=' + res.scale + '  pos=' + JSON.stringify(res.position) + (res.clipped ? '  CLIPPED' : '')
+    } else {
+      r.cap.textContent = m.id + '  FAILED: ' + res.reason
+    }
+    detail.push({ id: m.id, entry: m.entry, ok: res.ok, scale: res.scale, position: res.position, clipped: res.clipped, bounds: res.bounds, reason: res.reason })
+    document.getElementById('out').textContent =
+      'IN PROGRESS\n' + JSON.stringify(results, null, 2) + '\n\n--- detail ---\n' + JSON.stringify(detail, null, 1)
+  }
+  document.body.setAttribute('data-done', '1')
+  document.getElementById('out').textContent =
+    'DONE\n' + JSON.stringify(results, null, 2) + '\n\n--- detail ---\n' +
+    JSON.stringify(detail.map(function (d) { return { id: d.id, ok: d.ok, scale: d.scale, position: d.position, clipped: d.clipped, w: d.bounds && d.bounds.w, h: d.bounds && d.bounds.h, reason: d.reason } }), null, 1)
+}
+window.addEventListener('error', function (e) {
+  document.getElementById('out').textContent = 'ERROR ' + e.message
+})
+run()
+</script>
+</body>
+</html>
