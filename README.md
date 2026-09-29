@@ -315,52 +315,6 @@ override with `DSH_HARNESS_HOME` if you want otherwise.
 
 Editing `assets/live2d-widget.js` only needs a page refresh; editing `lib/index.js` needs a plugin reload.
 
-### Publishing to GitHub / npm
-
-The repository is already laid out for publishing; what remains is account-side.
-
-**1. Replace the placeholder.** Search the repo for `YOUR_GITHUB_NAME` and replace it with your GitHub
-username — 6 places: `author.url`, `repository.url`, `bugs.url` and `homepage` in `package.json`, plus
-the install commands in README.md and README_ZH.md. Set `author.name` to your own name while you are
-there. If the repository is not called `dsh-live2d-widget`, update those four URLs too.
-
-**2. Create the repository and add the `dsh-plugin` topic.** The official DSH README states that plugin
-repositories should carry the [`dsh-plugin`](https://github.com/topics/dsh-plugin) topic to be
-discoverable. On the repository page: About (gear) → Topics → `dsh-plugin`
-(`live2d`, `deepseek-harness` and `web-ui` are worth adding too).
-
-**3. Publish to npm** (optional — it is what makes `dsh plugin add dsh-live2d-widget` work):
-
-```sh
-npm run verify     # pre-publish smoke test; prepublishOnly runs it too
-npm publish
-git tag v1.2.0 && git push --tags
-```
-
-The name `dsh-live2d-widget` is currently free on npm (checked).
-
-**4. Swap in dynamic badges whenever you like.** The READMEs use static badges because the repository
-URL is not fixed yet; once it is, you can use these instead:
-
-```html
-<a href="https://github.com/xieluyang912/dsh-live2d-widget/stargazers"><img alt="stars" src="https://img.shields.io/github/stars/xieluyang912/dsh-live2d-widget?style=flat-square&color=4b6fff"></a>
-<a href="https://www.npmjs.com/package/dsh-live2d-widget"><img alt="npm" src="https://img.shields.io/npm/v/dsh-live2d-widget?style=flat-square&color=4b6fff"></a>
-```
-
-**Four things worth knowing before you publish (all measured, not assumed):**
-
-- **`files` decides what a git / npm install packs.** Verified: 126 files, 4.0 MB packed, containing
-  `lib`, `assets` (models and runtime), `cordis.patch.yml`, both READMEs and the `docs` images, with
-  `tools/` correctly excluded. **Keep `files` in step when you move directories**, or installs will be
-  missing files.
-- **Do not add an `exports` field.** DSH reads `cordis.patch.yml` by path; with no `exports` every file
-  resolves, but adding one forces you to declare `"./cordis.patch.yml"` and `"./package.json"` or
-  loading breaks. This plugin is not a library anyone imports, so leaving `exports` out is the safe
-  choice.
-- **`engines` must match DSH's own range** (`^22.19 || >=24`). Declaring something wider (say `>=20`)
-  lets people install a plugin that cannot actually run.
-- **There is no build step and no lifecycle script**, so a git install is never blocked by pnpm's
-  `ERR_PNPM_IGNORED_BUILDS`. That is deliberate — adding a `prepare` script would break it.
 
 > **Asset licensing notice:** three of the four bundled characters (Sagiri, Rem, Histoire) are
 > third-party assets extracted from commercial games, with no licence permitting redistribution;
