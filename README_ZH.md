@@ -52,12 +52,6 @@
 # ① 从 GitHub 安装（推荐：装完即有 4 个内置角色）
 dsh plugin --profile web add github:xieluyang912/dsh-live2d-widget
 
-#    等价的显式 git 写法
-dsh plugin --profile web add git+https://github.com/xieluyang912/dsh-live2d-widget.git
-
-# ② 从 npm 安装
-dsh plugin --profile web add dsh-live2d-widget
-
 # ③ 本地目录安装（开发用，pnpm 会建 junction，改代码即生效）
 dsh plugin --profile web add link:D:/Plugins/dsh-live2d-widget
 
